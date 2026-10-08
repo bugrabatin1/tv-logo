@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Logo Animasyonu</title>
+    <style>
+        /* Ekranın tamamını siyah yapıyoruz ve kaydırma çubuklarını gizliyoruz */
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: black;
+            overflow: hidden;
+            width: 100vw;
+            height: 100vh;
+        }
+
+        /* Logonun ekranda serbestçe dolaşabilmesi için mutlak pozisyon veriyoruz */
+        #dvd-logo {
+            position: absolute;
+            width: 400px; /* Logonun ekrandaki büyüklüğünü buradan ayarlayabilirsin */
+            top: 0;
+            left: 0;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Logonun resmi. Dosya adının logo.jpg olması gerekiyor. -->
+    <img id="dvd-logo" src="logo.jpg" alt="Logo">
+
+    <script>
+        const logo = document.getElementById('dvd-logo');
+        
+        // Logonun başlangıç koordinatları
+        let x = Math.random() * 100;
+        let y = Math.random() * 100;
+        
+        // Logonun hareket hızı (sayıyı artırırsan daha hızlı çarpar)
+        let dx = 1;
+        let dy = 1;
+
+        let animationRunning = false;
+
+        function animate() {
+            // Ekranın güncel genişliği ve yüksekliği
+            const screenWidth = window.innerWidth;
+            const screenHeight = window.innerHeight;
+
+            // Logonun genişliği ve yüksekliği
+            const logoWidth = logo.clientWidth;
+            const logoHeight = logo.clientHeight;
+
+            // Sağ veya sol kenara çarpma kontrolü
+            if (x + logoWidth >= screenWidth) {
+                x = screenWidth - logoWidth; // Sınırı aşmasını engelle
+                dx = -dx; // Yönü tersine çevir
+            } else if (x <= 0) {
+                x = 0;
+                dx = -dx;
+            }
+
+            // Alt veya üst kenara çarpma kontrolü
+            if (y + logoHeight >= screenHeight) {
+                y = screenHeight - logoHeight; // Sınırı aşmasını engelle
+                dy = -dy; // Yönü tersine çevir
+            } else if (y <= 0) {
+                y = 0;
+                dy = -dy;
+            }
+
+            // Pozisyonu güncelle
+            x += dx;
+            y += dy;
+
+            // Yeni pozisyonu CSS olarak uygula
+            logo.style.left = x + 'px';
+            logo.style.top = y + 'px';
+
+            // Animasyon döngüsünü saniyede 60 kare olacak şekilde devam ettir
+            requestAnimationFrame(animate);
+        }
+
+        // Resim tamamen yüklendikten sonra boyutlarını doğru hesaplayabilmek için animasyonu başlatıyoruz
+        logo.onload = () => {
+            if (!animationRunning) {
+                animationRunning = true;
+                animate();
+            }
+        };
+
+        // Resim halihazırda tarayıcı önbelleğindeyse direkt başlat
+        if (logo.complete && !animationRunning) {
+            animationRunning = true;
+            animate();
+        }
+    </script>
+</body>
+</html>
