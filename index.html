@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Logo Animasyonu</title>
     <style>
-        /* Ekranın tamamını siyah yapıyoruz ve kaydırma çubuklarını gizliyoruz */
         body {
             margin: 0;
             padding: 0;
@@ -14,86 +13,104 @@
             width: 100vw;
             height: 100vh;
         }
-
-        /* Logonun ekranda serbestçe dolaşabilmesi için mutlak pozisyon veriyoruz */
         #dvd-logo {
             position: absolute;
-            width: 400px; /* Logonun ekrandaki büyüklüğünü buradan ayarlayabilirsin */
+            width: 400px;
             top: 0;
             left: 0;
+        }
+        /* Tam Ekran Butonu Tasarımı */
+        #tam-ekran-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            padding: 10px 20px;
+            background-color: rgba(255, 255, 255, 0.3);
+            color: white;
+            border: 1px solid white;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            z-index: 1000;
+        }
+        #tam-ekran-btn:focus, #tam-ekran-btn:hover {
+            background-color: rgba(255, 255, 255, 0.7);
+            color: black;
         }
     </style>
 </head>
 <body>
 
-    <!-- Logonun resmi. Dosya adının logo.jpg olması gerekiyor. -->
+    <!-- Tıklanabilir buton -->
+    <button id="tam-ekran-btn" onclick="tamEkranYap()">Tam Ekran Yap</button>
+    
     <img id="dvd-logo" src="logo.jpg" alt="Logo">
 
     <script>
-        const logo = document.getElementById('dvd-logo');
+        var logo = document.getElementById('dvd-logo');
+        var buton = document.getElementById('tam-ekran-btn');
         
-        // Logonun başlangıç koordinatları
-        let x = Math.random() * 100;
-        let y = Math.random() * 100;
-        
-        // Logonun hareket hızı (sayıyı artırırsan daha hızlı çarpar)
-        let dx = 1;
-        let dy = 1;
+        var x = Math.random() * 100;
+        var y = Math.random() * 100;
+        var dx = 1;
+        var dy = 1;
 
-        let animationRunning = false;
+        // Butona basıldığında çalışacak fonksiyon
+        function tamEkranYap() {
+            var docElm = document.documentElement;
+            // Farklı tarayıcılar ve eski TV'ler için tam ekran komutları
+            if (docElm.requestFullscreen) {
+                docElm.requestFullscreen();
+            } else if (docElm.webkitRequestFullScreen) {
+                docElm.webkitRequestFullScreen(); 
+            } else if (docElm.mozRequestFullScreen) {
+                docElm.mozRequestFullScreen();
+            } else if (docElm.msRequestFullscreen) {
+                docElm.msRequestFullscreen();
+            }
+            // Görüntüyü bozmaması için tam ekrana geçince butonu gizle
+            buton.style.display = "none";
+        }
 
         function animate() {
-            // Ekranın güncel genişliği ve yüksekliği
-            const screenWidth = window.innerWidth;
-            const screenHeight = window.innerHeight;
+            var screenWidth = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
+            var screenHeight = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
 
-            // Logonun genişliği ve yüksekliği
-            const logoWidth = logo.clientWidth;
-            const logoHeight = logo.clientHeight;
+            var logoWidth = logo.clientWidth || 400;
+            var logoHeight = logo.clientHeight || 200;
 
-            // Sağ veya sol kenara çarpma kontrolü
             if (x + logoWidth >= screenWidth) {
-                x = screenWidth - logoWidth; // Sınırı aşmasını engelle
-                dx = -dx; // Yönü tersine çevir
+                x = screenWidth - logoWidth;
+                dx = -dx;
             } else if (x <= 0) {
                 x = 0;
                 dx = -dx;
             }
 
-            // Alt veya üst kenara çarpma kontrolü
             if (y + logoHeight >= screenHeight) {
-                y = screenHeight - logoHeight; // Sınırı aşmasını engelle
-                dy = -dy; // Yönü tersine çevir
+                y = screenHeight - logoHeight;
+                dy = -dy;
             } else if (y <= 0) {
                 y = 0;
                 dy = -dy;
             }
 
-            // Pozisyonu güncelle
             x += dx;
             y += dy;
 
-            // Yeni pozisyonu CSS olarak uygula
             logo.style.left = x + 'px';
             logo.style.top = y + 'px';
 
-            // Animasyon döngüsünü saniyede 60 kare olacak şekilde devam ettir
-            requestAnimationFrame(animate);
-        }
-
-        // Resim tamamen yüklendikten sonra boyutlarını doğru hesaplayabilmek için animasyonu başlatıyoruz
-        logo.onload = () => {
-            if (!animationRunning) {
-                animationRunning = true;
-                animate();
+            if (window.requestAnimationFrame) {
+                window.requestAnimationFrame(animate);
+            } else {
+                setTimeout(animate, 16);
             }
-        };
-
-        // Resim halihazırda tarayıcı önbelleğindeyse direkt başlat
-        if (logo.complete && !animationRunning) {
-            animationRunning = true;
-            animate();
         }
+
+        window.onload = function() {
+            animate();
+        };
     </script>
 </body>
 </html>
